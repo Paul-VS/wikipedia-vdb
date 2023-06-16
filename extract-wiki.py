@@ -15,8 +15,8 @@ from typing import List, Generator
 DUMP_VERSION = '20230301'
 
 # File paths for input and output files
-ARTICLES_PATH = f'enwiki-{DUMP_VERSION}-pages-articles-multistream1.xml.bz2'
-INDEX_PATH = f'enwiki-{DUMP_VERSION}-pages-articles-multistream-index1.txt.bz2'
+ARTICLES_PATH = f'enwiki-{DUMP_VERSION}-pages-articles-multistream1.xml-p1p41242.bz2'
+INDEX_PATH = f'enwiki-{DUMP_VERSION}-pages-articles-multistream-index1.txt-p1p41242.bz2'
 CLEAN_INDEX_PATH = f'enwiki-{DUMP_VERSION}-pages-articles-multistream-index1.txt'
 OUTPUT_PARQUET_PATH = 'wiki_parquet/'
 
