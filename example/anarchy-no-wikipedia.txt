@@ -1,0 +1,28 @@
+#!query -m=i+ 'Please tell me what anarchy is concisely based on this information from wikipedia. Just provide the response, no other questions or commentary. About 500 words or so. Plea.txse use dot points and clear ELI5 language.'                                                  1p4
+Here is a 387 word summary of what anarchy is in dot points and ELI5 language:
+                                                                                             .tx
+• Anarchy means "without rulers".
+
+• Anarchists believe that hierarchy, authority, and power structures are harmful and unjust.
+
+• They think that people should have freedom from being controlled by governments and bosses.
+
+• Anarchists want society to organize itself voluntarily through cooperation and mutual aid, not through force or rules imposed by authorities.
+
+• They think people are capable of making decisions for themselves without needing leaders and rules.
+
+• Anarchists want a society where people freely associate and cooperate for mutual benefit, and where social order comes from voluntary arrangements and respect for others.
+
+• They would like to see the end of laws and government, police and military forces, prisons, borders, private property, social classes, corporations, and capitalism.
+
+• Instead of hierarchies, anarchists envision non-hierarchical societies with decentralized power based on agreement between equals.
+
+• Different anarchist visions include small communities living self-sufficiently and independently, or highly organized societies using technology and direct democracy.
+
+• Methods to achieve anarchy differ too. Some anarchists work within the system, while others believe revolution is needed to overthrow existing authorities and structures.
+
+• Many anarchists support egalitarian collective economic systems like mutualism, where people would freely associate to produce goods for mutual benefit.
+
+• Anarchists believe that without authorities, humans would act in a more sociable, cooperative and trustworthy way towards each other.
+
+• They argue that humans are inherently good, and that hierarchies mainly result from unjust social structures, not human nature.
