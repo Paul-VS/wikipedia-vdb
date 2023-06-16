@@ -58,6 +58,6 @@ Please note that the scripts assume you have the necessary Wikipedia dump file a
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE.md).
 
 Feel free to modify and adapt the scripts to suit your needs!
