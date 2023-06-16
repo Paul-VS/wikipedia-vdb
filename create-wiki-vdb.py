@@ -1,3 +1,4 @@
+import os
 from pgvector.psycopg2 import register_vector
 import psycopg2.extras
 import psycopg2
@@ -115,8 +116,8 @@ chunked_articles_df['embedding'] = embeddings
 db_connection_params = {
     "host": "localhost",
     "database": "vector_db",
-    "user": "postgres",
-    "password": "password"
+    "user": os.environ["PG_VECTOR_DB_USER"],
+    "password": os.environ["PG_VECTOR_DB_PASSWORD"],
 }
 
 # Establish a connection to the database
@@ -128,22 +129,22 @@ register_vector(db_connection)
 # Create a cursor object
 cursor = db_connection.cursor()
 
-# Drop test table
-cursor.execute("""
-    DROP TABLE IF EXISTS wikipedia 
-""")
-db_connection.commit()
-
-# Create the table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS wikipedia (
-        id SERIAL PRIMARY KEY,
-        title TEXT NOT NULL,
-        chunk TEXT NOT NULL,
-        embedding VECTOR NOT NULL
-    )
-""")
-db_connection.commit()
+# # Drop test table
+# cursor.execute("""
+#     DROP TABLE IF EXISTS wikipedia
+# """)
+# db_connection.commit()
+#
+# # Create the table
+# cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS wikipedia (
+#         id SERIAL PRIMARY KEY,
+#         title TEXT NOT NULL,
+#         chunk TEXT NOT NULL,
+#         embedding VECTOR NOT NULL
+#     )
+# """)
+# db_connection.commit()
 
 # Prepare data for insertion
 data_for_insertion = ((row.title, row.chunk, row.embedding)
