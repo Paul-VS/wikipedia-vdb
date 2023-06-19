@@ -82,7 +82,7 @@ chunked_articles_df = pd.concat(chunked_articles_df_list, ignore_index=True)
 # print(chunked_articles_df)
 
 # Initialize the transformer model
-model = SentenceTransformer('all-MiniLM-L6-v2', device='cuda')
+model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1', device='cuda')
 model.max_seq_length = 512
 
 # Define the batch size
