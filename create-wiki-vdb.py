@@ -22,6 +22,7 @@ df = parquet_file.read_row_group(0).to_pandas()
 
 # Drop rows where articles only redirect
 df = df[~df['article'].apply(lambda x: x.lower().startswith('#redirect'))]
+df = df.head(100)
 
 
 def clean_wiki_text(raw_text):
@@ -79,38 +80,22 @@ with mp.Pool(processes=mp.cpu_count()) as pool:
 
 chunked_articles_df = pd.concat(chunked_articles_df_list, ignore_index=True)
 
-# print(chunked_articles_df)
-
 # Initialize the transformer model
 model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1', device='cuda')
 model.max_seq_length = 512
 
 # Define the batch size
-batch_size = 32
+batch_size = 128
 
+# Extract the chunks to a list
+chunks = chunked_articles_df['chunk'].tolist()
 
-def compute_embeddings(rows):
-    # Compute embeddings for each chunk in the DataFrame
-    chunks = rows['chunk'].tolist()
-    embeddings = model.encode(chunks)
-    return embeddings
-
-
-# Group chunks into batches
-batches = [chunked_articles_df[i:i+batch_size]
-           for i in range(0, len(chunked_articles_df), batch_size)]
-
-# Compute embeddings for each batch
-embeddings = []
-for batch in tqdm(batches, desc="Computing embeddings in batches"):
-    batch_embeddings = compute_embeddings(batch)
-    embeddings.extend(batch_embeddings)
-
+# Compute embeddings for each chunk in the DataFrame
+embeddings = model.encode(chunks, batch_size=batch_size,
+                          convert_to_numpy=True, show_progress_bar=True)
 
 # Assign the embeddings back to the DataFrame
-chunked_articles_df['embedding'] = embeddings
-
-# print(chunked_articles_df)
+chunked_articles_df['embedding'] = list(embeddings)
 
 # Set up connection parameters
 db_connection_params = {
@@ -170,12 +155,7 @@ db_connection.commit()
 cursor.close()
 db_connection.close()
 
-
 # End the timer
 end_time = time.time()
-
-# Calculate the elapsed time
 elapsed_time = end_time - start_time
-
-# Print the elapsed time
 print(f"Script execution time: {elapsed_time} seconds")
