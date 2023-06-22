@@ -11,6 +11,7 @@ from tqdm import tqdm
 from bz2 import BZ2Decompressor
 from typing import List, Generator
 import mwparserfromhell
+import traceback
 
 # Wikipedia dump version
 DUMP_VERSION = '20230301'
@@ -162,6 +163,35 @@ def process_articles_in_parallel(list_bytes: List[bytes]) -> None:
     output_file_path = os.path.join(
         OUTPUT_PARQUET_PATH, '{:08d}.parquet'.format(df_list[0]['index'].values[0]))
 
+    df_combined = pd.concat(df_list, ignore_index=True)
+    df_combined.to_parquet(output_file_path, compression='snappy', index=False)
+    del df_combined
+
+
+def process_articles_in_parallel(list_bytes: List[bytes]) -> None:
+    """
+    Processes a list of raw byte data for Wikipedia articles in parallel using multiple processors.
+    Writes the processed data to Parquet files.
+    """
+    df_list = []
+    for article in list_bytes:
+        try:
+            df = parse_article_data(article)
+            df = df[~df['article'].apply(
+                lambda x: x.lower().startswith('#redirect'))]
+            df['article'] = df['article'].apply(clean_wiki_text)
+            df['chunks'] = df['article'].apply(split_text_into_chunks)
+            df = df.explode('chunks').reset_index(drop=True)
+            df.drop(columns=['article'], inplace=True)
+            df_list.append(df)
+        except Exception as e:
+            # If an error occurs, log the error message and the title of the article
+            print(f"Error processing article: '{e}")
+            print(traceback.format_exc())
+            continue
+
+    output_file_path = os.path.join(
+        OUTPUT_PARQUET_PATH, '{:08d}.parquet'.format(df_list[0]['index'].values[0]))
     df_combined = pd.concat(df_list, ignore_index=True)
     df_combined.to_parquet(output_file_path, compression='snappy', index=False)
     del df_combined
