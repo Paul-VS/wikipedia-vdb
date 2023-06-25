@@ -8,19 +8,45 @@ import pyarrow.parquet as pq
 from tqdm import tqdm
 import multiprocessing as mp
 import time
+import json
+import openai
+from dotenv import load_dotenv
+
+table_name = "svelte"  # Set your desired table name here
+
 
 # Start the timer
 start_time = time.time()
 
-# Define the path to the parquet file
-file_path = 'wiki_parquet/00000012.parquet'
+# # Read the parquet file into a pandas DataFrame
+# file_path = 'wiki_parquet/00000012.parquet'
+# parquet_file = pq.ParquetFile(file_path)
+# df = parquet_file.read_row_group(0).to_pandas()
 
-# Read the parquet file into a pandas DataFrame
-parquet_file = pq.ParquetFile(file_path)
-df = parquet_file.read_row_group(0).to_pandas()
+# Read the JSON file into a pandas DataFrame
+with open('output.json', 'r') as file:
+    data = json.load(file)
+formatted_data = []
+for title, chunks in data.items():
+    for chunk in chunks:
+        formatted_data.append({"title": title, "chunks": chunk})
+df = pd.DataFrame(formatted_data)
+
+
+# OPTION Use ADA-002 API for embeddings
+# load_dotenv()
+# openai.api_key = os.environ.get("OPENAI_API_KEY")
+# response = openai.Embedding.create(
+#     model="text-embedding-ada-002",
+#     input=df['chunks'].tolist()
+# )
+# embeddings = [item['embedding'] for item in response['data']]
+# df['embedding'] = list(embeddings)
 
 # Initialize the transformer model
-model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1', device='cuda')
+# model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1', device='cuda')
+model = SentenceTransformer(
+    'sentence-transformers/msmarco-distilbert-base-tas-b', device='cuda')
 model.max_seq_length = 512
 
 # Define the batch size
@@ -35,6 +61,8 @@ embeddings = model.encode(chunks, batch_size=batch_size,
 
 # Assign the embeddings back to the DataFrame
 df['embedding'] = list(embeddings)
+
+print(df)
 
 # Set up connection parameters
 db_connection_params = {
@@ -53,20 +81,20 @@ register_vector(db_connection)
 # Create a cursor object
 cursor = db_connection.cursor()
 
-# Drop test table
-cursor.execute("""
-    DROP TABLE IF EXISTS wikipedia
+# Drop the table
+cursor.execute(f"""
+   DROP TABLE IF EXISTS {table_name}
 """)
 db_connection.commit()
 
 # Create the table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS wikipedia (
-        id SERIAL PRIMARY KEY,
-        title TEXT NOT NULL,
-        chunk TEXT NOT NULL,
-        embedding VECTOR NOT NULL
-    )
+cursor.execute(f"""
+   CREATE TABLE IF NOT EXISTS {table_name} (
+       id SERIAL PRIMARY KEY,
+       title TEXT NOT NULL,
+       chunk TEXT NOT NULL,
+       embedding VECTOR NOT NULL
+   )
 """)
 db_connection.commit()
 
@@ -81,13 +109,12 @@ data_for_insertion = tqdm(
 # Insert data into the table
 psycopg2.extras.execute_values(
     cursor,
-    """
-    INSERT INTO wikipedia (title, chunk, embedding) VALUES %s
+    f"""
+    INSERT INTO {table_name} (title, chunk, embedding) VALUES %s
     """,
     data_for_insertion,
     template="(%s, %s, %s::vector)"
 )
-
 db_connection.commit()
 
 # Close the cursor and the connection

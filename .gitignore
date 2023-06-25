@@ -5,3 +5,4 @@
 /enwiki-20230301-pages-articles-multistream1.xml.bz2
 /wiki_parquet
 embeddings.onnx
+.env
