@@ -12,25 +12,29 @@ import json
 import openai
 from dotenv import load_dotenv
 
-table_name = "svelte"  # Set your desired table name here
+table_name = "wikipedia"  # Set your desired table name here
 
 
 # Start the timer
 start_time = time.time()
 
 # # Read the parquet file into a pandas DataFrame
-# file_path = 'wiki_parquet/00000012.parquet'
-# parquet_file = pq.ParquetFile(file_path)
-# df = parquet_file.read_row_group(0).to_pandas()
+file_path = 'wiki_parquet/00000012.parquet'
+parquet_file = pq.ParquetFile(file_path)
+df = parquet_file.read_row_group(0).to_pandas()
+
+pd.set_option('display.max_colwidth', 0)
+print(df['chunks'].head(10))
+exit()
 
 # Read the JSON file into a pandas DataFrame
-with open('output.json', 'r') as file:
-    data = json.load(file)
-formatted_data = []
-for title, chunks in data.items():
-    for chunk in chunks:
-        formatted_data.append({"title": title, "chunks": chunk})
-df = pd.DataFrame(formatted_data)
+# with open('output.json', 'r') as file:
+#     data = json.load(file)
+# formatted_data = []
+# for title, chunks in data.items():
+#     for chunk in chunks:
+#         formatted_data.append({"title": title, "chunks": chunk})
+# df = pd.DataFrame(formatted_data)
 
 
 # OPTION Use ADA-002 API for embeddings

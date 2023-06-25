@@ -6,3 +6,4 @@
 /wiki_parquet
 embeddings.onnx
 .env
+env
