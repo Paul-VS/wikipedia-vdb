@@ -15,12 +15,13 @@ logger.addHandler(ch)
 
 
 def headings_and_tables_filter(elem, doc):
+    # Prepend a number of hashtags to headings depending on the heading level
     if isinstance(elem, pf.Header):
         hash_tags = '#' * elem.level
-        # Prepend a number of hashtags to headings depending on the heading level
         elem.content = [
             pf.Str(f"{hash_tags} {pf.stringify(elem.content)}")]
         return elem
+    # Leave table elements as is
     elif isinstance(elem, pf.Table):
         return elem
 
@@ -36,7 +37,6 @@ def log_raw_inlines(elem, doc):
 
 def convert_raw_inline_to_text(elem, doc):
     if isinstance(elem, pf.RawInline):
-        # replace underscores since they are common formatting elements
         plain_text = elem.text.replace('_', '')
         return [pf.Str(plain_text)]
 

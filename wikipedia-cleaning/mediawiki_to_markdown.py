@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import pypandoc
 import os
+import re
 
 
 def parse_wiki_xml(file_path):
@@ -58,5 +59,10 @@ plain_text = pypandoc.convert_text(
     filters=[os.path.join('.', 'pandoc_filter.py')],
 )
 
+# Remove artifacts
+cleaned_text = '\n'.join(
+    [line for line in plain_text.split('\n') if line.strip() != '-'])
+cleaned_text = re.sub('\n{3,}', '\n\n', cleaned_text)
+
 with open("converted_article.md", "w") as file:
-    file.write('# ' + title + '\n\n' + plain_text)
+    file.write('# ' + title + '\n\n' + cleaned_text)
