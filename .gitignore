@@ -7,3 +7,6 @@
 embeddings.onnx
 .env
 env
+wikipedia-cleaning/structured_markdown.json
+.gitignore
+wikipedia-cleaning/converted_article.md
